@@ -117,6 +117,17 @@ const API_URL = import.meta.env.VITE_API_URL;
 * Tokens are automatically attached to API requests.
 * Protected pages are secured using the `ProtectedRoute` component.
 
+### Demo credentials
+
+You can sign in to the deployed demo using the seeded admin account:
+
+```
+Email: admin@gmail.com
+Password: 123456
+```
+
+These credentials are for demonstration only. Do not use them in production — change the admin password and secure your environment variables.
+
 ## Development Notes
 
 * API requests are managed through `src/services/api.jsx`.

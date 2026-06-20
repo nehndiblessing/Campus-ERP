@@ -173,7 +173,14 @@ If `MONGO_URI` is not provided, the application automatically starts an in-memor
 
 On startup, the application automatically creates a default administrator account if no admin user exists in the database.
 
-Configure the default credentials through environment variables or update them after first login.
+Demo credentials (for demo/testing purposes only):
+
+```
+ADMIN_EMAIL=admin@gmail.com
+ADMIN_PASSWORD=123456
+```
+
+Configure the default credentials through environment variables or update them after first login. IMPORTANT: change these values in production and store secrets in your host's environment variables rather than committing them.
 
 ## Available Scripts
 

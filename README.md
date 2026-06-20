@@ -165,7 +165,14 @@ Update the API base URL if deploying the backend to a different server.
 
 If no admin account exists, the backend automatically creates one during initialization.
 
-You can modify the default admin credentials in the backend configuration if required.
+Demo credentials (for demo/testing purposes only):
+
+```
+ADMIN_EMAIL=admin@gmail.com
+ADMIN_PASSWORD=123456
+```
+
+These credentials are seeded on startup when no admin exists. For production deployments, change the admin password and set secure environment variables on your host provider. Do not commit real credentials to the repository.
 
 ## Available Scripts
 
