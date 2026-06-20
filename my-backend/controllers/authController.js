@@ -9,19 +9,8 @@ export const registerUser = async (req, res) => {
     if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "Name, email, password, and role are required" });
     }
-
-    const adminExists = await User.exists({ role: "admin" });
-
-    if (!adminExists) {
-      if (role !== "admin") {
-        return res.status(400).json({ message: "First registered user must be an admin" });
-      }
-    } else {
-      if (!req.user || req.user.role !== "admin") {
-        return res.status(403).json({ message: "Registration restricted to admin users" });
-      }
-    }
-
+    // Allow public registration; callers may request any role (including admin).
+    // WARNING: permitting public admin registration is insecure for production.
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {

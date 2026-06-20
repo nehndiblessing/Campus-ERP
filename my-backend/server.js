@@ -23,6 +23,8 @@ const app = express();
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  // Add deployed frontend origin so requests from Vercel are allowed
+  "https://campus-erp-zeta.vercel.app",
   "http://localhost:5173",
   "http://localhost:3000",
 ].filter(Boolean).map((origin) => origin.replace(/\/+$/, ""));
