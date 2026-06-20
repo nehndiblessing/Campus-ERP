@@ -23,15 +23,13 @@ const app = express();
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
-  "https://campus-erp-sigma.vercel.app",
-  "https://campus-8jgmx298f-nehndiblessings-projects.vercel.app",
   "http://localhost:5173",
   "http://localhost:3000",
-].filter(Boolean).map((origin) => origin.replace(/\/++$/, ""));
+].filter(Boolean).map((origin) => origin.replace(/\/+$/, ""));
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin.replace(/\/++$/, ""))) {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/+$/, ""))) {
       callback(null, true);
     } else {
       callback(new Error(`Not allowed by CORS: ${origin}`));

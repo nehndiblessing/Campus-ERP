@@ -1,56 +1,231 @@
-# Campus ERP Full Stack
+# Campus ERP System
 
-This repository contains a full-stack Campus ERP application with separate frontend and backend folders.
+A full-stack College ERP application built with the MERN stack (MongoDB, Express.js, React.js, and Node.js) to streamline academic and administrative operations within an educational institution.
 
-## Structure
+The system provides a centralized platform for managing student records, attendance, academic marks, user authentication, and dashboard analytics. It demonstrates modern web development practices, RESTful API design, secure authentication, database management, and responsive user interface development.
 
-- `my-backend/` - Express.js backend for authentication, students, attendance, marks, and dashboard analytics
-- `my-frontend/` - React + Vite frontend for user interface, protected routes, dashboards, and forms
+## Features
 
-## Setup
+* Secure JWT Authentication
+* Role-Based Access Control
+* Student Management System (CRUD)
+* Attendance Management
+* Marks Management
+* Dashboard Analytics
+* Protected Routes
+* MongoDB Atlas Integration
+* RESTful APIs
+* Responsive User Interface
 
-### Backend
-
-1. Open a terminal in `my-backend`
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create/update `.env` with:
-   ```env
-   PORT=8006
-   MONGO_URI=<your-mongo-uri>
-   JWT_SECRET=<your-secret>
-   ```
-4. Start the backend:
-   ```bash
-   npm start
-   ```
+## Tech Stack
 
 ### Frontend
 
-1. Open a terminal in `my-frontend`
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the frontend:
-   ```bash
-   npm run dev
-   ```
+* React.js
+* Vite
+* React Router
+* Axios
+* React Hot Toast
+* Recharts
 
-## Notes
+### Backend
 
-- The frontend expects the backend API at `http://localhost:8006/api`.
-- Backend protected routes require a valid JWT stored in `localStorage`.
-- There is a default admin user created automatically if none exists.
+* Node.js
+* Express.js
+* JWT Authentication
+* bcryptjs
+* Mongoose
 
-## Useful commands
+### Database
 
-- Backend:
-  - `npm start` - run the Express server
-  - `npm run dev` - run the backend with nodemon
-- Frontend:
-  - `npm run dev` - start Vite dev server
-  - `npm run build` - build the frontend
-  - `npm run lint` - run ESLint
+* MongoDB Atlas
+
+## Project Structure
+
+```text
+Campus-ERP/
+│
+├── my-frontend/     # React + Vite Frontend
+│
+├── my-backend/      # Express.js Backend
+│
+└── README.md
+```
+
+### Frontend (`my-frontend`)
+
+* Authentication Pages
+* Dashboard
+* Student Management
+* Attendance Management
+* Marks Management
+* Protected Routes
+* Analytics & Charts
+
+### Backend (`my-backend`)
+
+* Authentication APIs
+* Student APIs
+* Attendance APIs
+* Marks APIs
+* Dashboard Analytics APIs
+* JWT Middleware
+* MongoDB Integration
+
+## Installation & Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd Campus-ERP
+```
+
+---
+
+### 2. Backend Setup
+
+Navigate to the backend folder:
+
+```bash
+cd my-backend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file:
+
+```env
+PORT=8006
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_jwt_secret
+```
+
+Start the backend server:
+
+```bash
+npm run dev
+```
+
+or
+
+```bash
+npm start
+```
+
+Backend will run on:
+
+```text
+http://localhost:8006
+```
+
+---
+
+### 3. Frontend Setup
+
+Navigate to the frontend folder:
+
+```bash
+cd my-frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Frontend will run on:
+
+```text
+http://localhost:5173
+```
+
+## API Configuration
+
+The frontend is configured to communicate with:
+
+```text
+http://localhost:8006/api
+```
+
+Update the API base URL if deploying the backend to a different server.
+
+## Default Admin Account
+
+If no admin account exists, the backend automatically creates one during initialization.
+
+You can modify the default admin credentials in the backend configuration if required.
+
+## Available Scripts
+
+### Backend
+
+```bash
+npm start
+```
+
+Run the production server.
+
+```bash
+npm run dev
+```
+
+Run the server using Nodemon.
+
+### Frontend
+
+```bash
+npm run dev
+```
+
+Start the Vite development server.
+
+```bash
+npm run build
+```
+
+Build the application for production.
+
+```bash
+npm run lint
+```
+
+Run ESLint checks.
+
+## Project Modules
+
+1. Authentication Module
+2. Student Management Module
+3. Attendance Management Module
+4. Marks Management Module
+5. Dashboard Analytics Module
+6. User Profile Module
+
+## Learning Outcomes
+
+This project demonstrates:
+
+* Full-Stack MERN Development
+* REST API Design
+* JWT Authentication & Authorization
+* MongoDB Database Design
+* CRUD Operations
+* State Management
+* Protected Routing
+* Dashboard Analytics
+* Responsive UI Development
+
+## License
+
+This project was developed for academic and educational purposes.
