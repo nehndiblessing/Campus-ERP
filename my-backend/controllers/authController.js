@@ -68,11 +68,7 @@ export const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-
-    if (user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
+    // Allow any user with valid credentials to log in
     res.json({
       _id: user._id,
       name: user.name,
