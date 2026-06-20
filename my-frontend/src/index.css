@@ -1,0 +1,386 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+}
+
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-panel {
+  width: min(100%, 420px);
+  background: white;
+  padding: 32px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+}
+
+.login-panel h1 {
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.login-panel p {
+  margin-bottom: 24px;
+  color: #64748b;
+}
+
+.login-form {
+  display: grid;
+  gap: 16px;
+}
+
+.login-form label {
+  display: grid;
+  gap: 8px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.login-button {
+  display: block;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background: #1e293b;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+}
+
+.content {
+  flex: 1;
+}
+
+.navbar {
+  background: white;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.page-content {
+  padding: 25px;
+}
+.stats-grid {
+  margin-top: 20px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 20px;
+}
+
+.stat-card {
+  background: white;
+
+  padding: 24px;
+
+  border-radius: 12px;
+
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.stat-card h4 {
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+.stat-card h2 {
+  color: #1e293b;
+}
+
+.dashboard-section {
+  margin-top: 40px;
+}
+
+.activity-card {
+  margin-top: 12px;
+
+  background: white;
+
+  padding: 16px;
+
+  border-radius: 10px;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+
+  padding: 12px;
+
+  border-radius: 8px;
+
+  transition: 0.2s;
+}
+
+.sidebar a:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.active-link {
+  background: #2563eb;
+}
+
+.navbar {
+  background: white;
+
+  padding: 20px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.user-box {
+  background: #2563eb;
+
+  color: white;
+
+  padding: 8px 14px;
+
+  border-radius: 8px;
+}
+
+.students-header {
+  margin-top: 20px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+}
+
+.students-header input {
+  width: 300px;
+
+  padding: 10px;
+
+  border: 1px solid #ddd;
+
+  border-radius: 8px;
+}
+
+.students-header button {
+  background: #2563eb;
+
+  color: white;
+
+  border: none;
+
+  padding: 10px 18px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.student-table {
+  width: 100%;
+
+  margin-top: 25px;
+
+  background: white;
+
+  border-collapse: collapse;
+
+  border-radius: 12px;
+
+  overflow: hidden;
+}
+
+.student-table th {
+  background: #f8fafc;
+
+  text-align: left;
+
+  padding: 15px;
+}
+
+.student-table td {
+  padding: 15px;
+
+  border-top: 1px solid #eee;
+}
+
+.student-table button {
+  margin-right: 8px;
+
+  padding: 6px 10px;
+
+  border: none;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0,0,0,0.4);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+.modal {
+  width: 400px;
+
+  background: white;
+
+  padding: 25px;
+
+  border-radius: 12px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+.modal input {
+  padding: 10px;
+
+  border: 1px solid #ddd;
+
+  border-radius: 8px;
+}
+
+.modal-actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+}
+
+.login-container {
+  min-height: 100vh;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  background: #f1f5f9;
+}
+
+.login-card {
+  width: 400px;
+
+  background: white;
+
+  padding: 30px;
+
+  border-radius: 12px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 15px;
+
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.login-card input {
+  padding: 12px;
+
+  border: 1px solid #ddd;
+
+  border-radius: 8px;
+}
+
+.login-card button {
+  background: #2563eb;
+
+  color: white;
+
+  border: none;
+
+  padding: 12px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.logout-btn {
+  margin-top: 30px;
+
+  width: 100%;
+
+  border: none;
+
+  background: #dc2626;
+
+  color: white;
+
+  padding: 10px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+}
