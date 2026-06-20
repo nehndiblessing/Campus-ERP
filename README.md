@@ -97,7 +97,7 @@ Install dependencies:
 npm install
 ```
 
-Create a `.env` file:
+Create a `.env` file or copy from `.env.example`:
 
 ```env
 PORT=8006

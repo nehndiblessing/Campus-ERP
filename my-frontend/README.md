@@ -93,10 +93,16 @@ Default API endpoint:
 http://localhost:8006/api
 ```
 
-If environment-based configuration is enabled, create a `.env` file:
+If environment-based configuration is enabled, create a `.env` file or use the project `.env.example` as a template:
 
 ```env
 VITE_API_URL=http://localhost:8006/api
+```
+
+For deployment, use the backend URL:
+
+```env
+VITE_API_URL=https://campus-erp.onrender.com/api
 ```
 
 Example usage:
