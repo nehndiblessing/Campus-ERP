@@ -5,6 +5,7 @@ import {
   FaClipboardCheck,
   FaChartBar,
   FaUser,
+  FaBuilding,
 } from "react-icons/fa";
 import useAuth from "../../context/useAuth";
 
@@ -29,6 +30,12 @@ const Sidebar = () => {
         {user?.role === "admin" && (
           <NavLink to="/students">
             <FaUserGraduate /> Students
+          </NavLink>
+        )}
+
+        {user?.role === "admin" && (
+          <NavLink to="/departments">
+            <FaBuilding /> Departments
           </NavLink>
         )}
 

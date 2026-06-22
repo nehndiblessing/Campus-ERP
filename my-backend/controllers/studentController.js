@@ -7,7 +7,7 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 export const getStudents = async (req, res) => {
   try {
-    const students = await Student.find();
+    const students = await Student.find().populate("department");
     res.json(students);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -20,7 +20,7 @@ export const getStudentById = async (req, res) => {
       return res.status(400).json({ message: "Invalid student ID" });
     }
 
-    const student = await Student.findById(req.params.id);
+    const student = await Student.findById(req.params.id).populate("department");
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
@@ -102,7 +102,7 @@ export const getStudentProfile = async (req, res) => {
       return res.status(400).json({ message: "Invalid student ID" });
     }
 
-    const student = await Student.findById(req.params.id);
+    const student = await Student.findById(req.params.id).populate("department");
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });

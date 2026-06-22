@@ -10,6 +10,7 @@ const Students = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [students, setStudents] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -44,10 +45,19 @@ const Students = () => {
     }
   };
 
+  const fetchDepartments = async () => {
+    try {
+      const { data } = await api.get("/departments");
+      setDepartments(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 useEffect(() => {
   const loadData = async () => {
     setLoading(true);
-    await fetchStudents();
+    await Promise.all([fetchStudents(), fetchDepartments()]);
   };
 
   loadData();
@@ -157,7 +167,7 @@ const handleSaveStudent = async (event) => {
       name: student.name || "",
       email: student.email || "",
       rollNo: student.rollNo || "",
-      department: student.department || "",
+      department: student.department?._id || student.department || "",
       semester: student.semester || "",
       phone: student.phone || "",
       photo: student.photo || "",
@@ -219,14 +229,14 @@ const handleSaveStudent = async (event) => {
             </thead>
 
             <tbody>
-          {students
+              {students
             .filter((s) => {
               if (!searchQuery) return true;
               const q = searchQuery.toLowerCase();
               return (
                 String(s.name || "").toLowerCase().includes(q) ||
                 String(s.rollNo || "").toLowerCase().includes(q) ||
-                String(s.department || "").toLowerCase().includes(q) ||
+                String(s.department?.name || s.department || "").toLowerCase().includes(q) ||
                 String(s.email || "").toLowerCase().includes(q)
               );
             })
@@ -234,7 +244,7 @@ const handleSaveStudent = async (event) => {
               <tr key={student.id || student._id}>
                 <td>{student.name}</td>
                 <td>{student.rollNo}</td>
-                <td>{student.department}</td>
+                <td>{student.department?.name || student.department}</td>
                 <td>
                   <button onClick={() => navigate(`/students/${student._id}`)}>View</button>
                   <button type="button" onClick={() => handleEditStudent(student)}>Edit</button>
@@ -279,13 +289,18 @@ const handleSaveStudent = async (event) => {
               value={formData.rollNo}
               onChange={handleChange}
             />
-            <input
+            <select
               name="department"
-              placeholder="Department"
               required
               value={formData.department}
               onChange={handleChange}
-            />
+              style={{ padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "inherit" }}
+            >
+              <option value="">Select Department</option>
+              {departments.map((dept) => (
+                <option key={dept._id} value={dept._id}>{dept.name} ({dept.code})</option>
+              ))}
+            </select>
             <input
               name="semester"
               type="number"

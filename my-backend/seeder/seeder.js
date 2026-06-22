@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 
 import User from "../models/User.js";
+import Department from "../models/Department.js";
 import Student from "../models/Student.js";
 import Attendance from "../models/Attendance.js";
 import Mark from "../models/Marks.js";
@@ -41,12 +42,12 @@ const lastNames = [
   "Malhotra",
 ];
 
-const departments = [
-  "Computer Science",
-  "Information Technology",
-  "Electronics",
-  "Mechanical",
-  "Civil",
+const departmentData = [
+  { name: "Computer Science", code: "CSE" },
+  { name: "Information Technology", code: "IT" },
+  { name: "Electronics", code: "ECE" },
+  { name: "Mechanical", code: "ME" },
+  { name: "Civil", code: "CE" },
 ];
 
 const subjects = [
@@ -82,9 +83,10 @@ if (!existingAdmin) {
   console.log("Admin user already exists, skipping admin creation");
 }
 
-
-
 console.log("Users created");
+
+const createdDepartments = await Department.insertMany(departmentData);
+console.log("Departments created");
 
 const students = [];
 
@@ -120,12 +122,12 @@ for (let i = 1; i <= 50; i++) {
       ).padStart(3, "0")}`,
 
     department:
-      departments[
+      createdDepartments[
         Math.floor(
           Math.random() *
-            departments.length
+            createdDepartments.length
         )
-      ],
+      ]._id,
 
     semester:
       Math.floor(

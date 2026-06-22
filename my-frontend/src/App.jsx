@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
 import Attendance from "./pages/Attendance";
 import Marks from "./pages/Marks";
+import Departments from "./pages/Departments";
 import Profile from "./pages/Profile";
 import StudentDetails from "./pages/StudentDetails";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -20,6 +21,7 @@ function App() {
         <Route path="/students/:id" element={<ProtectedRoute><StudentDetails /></ProtectedRoute>} />
         <Route path="/attendance" element={<ProtectedRoute><Attendance /></ProtectedRoute>} />
         <Route path="/marks" element={<ProtectedRoute><Marks /></ProtectedRoute>} />
+        <Route path="/departments" element={<ProtectedRoute><Departments /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -76,7 +76,7 @@ const StudentDetails = () => {
             <strong>Phone Number:</strong> {student.phone || "N/A"}
           </p>
           <p>
-            <strong>Department:</strong> {student.department}
+            <strong>Department:</strong> {student.department?.name || student.department}
           </p>
           <p>
             <strong>Semester:</strong> {student.semester}
