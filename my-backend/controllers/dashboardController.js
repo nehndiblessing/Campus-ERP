@@ -1,6 +1,7 @@
 import Student from "../models/Student.js";
 import Attendance from "../models/Attendance.js";
 import Mark from "../models/Marks.js";
+import Department from "../models/Department.js";
 export const getDashboardStats =
   async (req, res) => {
     try {
@@ -252,6 +253,100 @@ export const getAttendanceTrend = async (req, res) => {
     }
 
     res.json({ attendanceTrend });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getDepartmentStats = async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const departments = await Department.find().lean();
+
+    const studentCounts = await Student.aggregate([
+      { $group: { _id: "$department", count: { $sum: 1 } } },
+    ]);
+
+    const todayAttendance = await Attendance.aggregate([
+      { $match: { date: { $gte: today, $lt: tomorrow } } },
+      {
+        $lookup: {
+          from: "students",
+          localField: "student",
+          foreignField: "_id",
+          as: "studentInfo",
+        },
+      },
+      { $unwind: "$studentInfo" },
+      {
+        $group: {
+          _id: "$studentInfo.department",
+          present: {
+            $sum: { $cond: [{ $eq: ["$status", "Present"] }, 1, 0] },
+          },
+          absent: {
+            $sum: { $cond: [{ $eq: ["$status", "Absent"] }, 1, 0] },
+          },
+        },
+      },
+    ]);
+
+    const avgMarks = await Mark.aggregate([
+      {
+        $lookup: {
+          from: "students",
+          localField: "student",
+          foreignField: "_id",
+          as: "studentInfo",
+        },
+      },
+      { $unwind: "$studentInfo" },
+      {
+        $group: {
+          _id: "$studentInfo.department",
+          averageMarks: { $avg: "$marks" },
+        },
+      },
+    ]);
+
+    const deptStats = departments.map((dept) => {
+      const deptId = dept._id.toString();
+      const studentCount =
+        studentCounts.find((s) => s._id.toString() === deptId)?.count || 0;
+      const attendance = todayAttendance.find(
+        (a) => a._id.toString() === deptId
+      );
+      const marks = avgMarks.find((m) => m._id.toString() === deptId);
+
+      const present = attendance?.present || 0;
+      const absent = attendance?.absent || 0;
+      const totalAttendance = present + absent;
+      const attendancePercentage =
+        totalAttendance > 0
+          ? ((present / totalAttendance) * 100).toFixed(1)
+          : "0.0";
+
+      return {
+        department: dept.name,
+        departmentCode: dept.code,
+        totalStudents: studentCount,
+        presentToday: present,
+        absentToday: absent,
+        attendancePercentage,
+        averageMarks: marks?.averageMarks
+          ? Math.round(marks.averageMarks)
+          : 0,
+      };
+    });
+
+    res.json({
+      totalDepartments: departments.length,
+      departmentStats: deptStats,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

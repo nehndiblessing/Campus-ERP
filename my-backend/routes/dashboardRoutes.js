@@ -6,6 +6,7 @@ import {
   getDashboardStats,
   getAttendanceTrend,
   getSubjectAverageMarks,
+  getDepartmentStats,
 } from "../controllers/dashboardController.js";
 
 const router = express.Router();
@@ -13,5 +14,6 @@ const router = express.Router();
 router.get("/stats", protect, getDashboardStats);
 router.get("/attendance-trend", protect, getAttendanceTrend);
 router.get("/subject-averages", protect, getSubjectAverageMarks);
+router.get("/department-stats", protect, getDepartmentStats);
 
 export default router;

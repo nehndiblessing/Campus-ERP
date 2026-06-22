@@ -9,6 +9,7 @@ import api from "../services/api";
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
+  const [deptStats, setDeptStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -16,8 +17,12 @@ const Dashboard = () => {
     const fetchDashboard = async () => {
       setLoading(true);
       try {
-        const { data } = await api.get("/dashboard/stats");
-        setStats(data);
+        const [statsRes, deptRes] = await Promise.all([
+          api.get("/dashboard/stats"),
+          api.get("/dashboard/department-stats"),
+        ]);
+        setStats(statsRes.data);
+        setDeptStats(deptRes.data);
         setError("");
       } catch (error) {
         console.error(error);
@@ -82,6 +87,26 @@ const Dashboard = () => {
           ))
         ) : (
           <p>No recent students found.</p>
+        )}
+      </div>
+
+      <div className="dashboard-section">
+        <h2>Department Statistics</h2>
+        {deptStats?.departmentStats?.length > 0 ? (
+          deptStats.departmentStats.map((dept) => (
+            <div key={dept.departmentCode} className="dept-stats-card">
+              <h3>{dept.department} ({dept.departmentCode})</h3>
+              <div className="dept-stats-grid">
+                <StatCard title="Students" value={dept.totalStudents} />
+                <StatCard title="Present Today" value={dept.presentToday} />
+                <StatCard title="Absent Today" value={dept.absentToday} />
+                <StatCard title="Attendance %" value={`${dept.attendancePercentage}%`} />
+                <StatCard title="Average Marks" value={dept.averageMarks} />
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No department data available.</p>
         )}
       </div>
     </>
