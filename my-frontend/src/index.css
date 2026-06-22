@@ -391,6 +391,44 @@ body {
   padding: 16px;
 }
 
+.at-risk-card {
+  margin-top: 12px;
+  background: #fff8f0;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border-left: 4px solid #f59e0b;
+}
+
+.at-risk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.at-risk-badge {
+  background: #f59e0b;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.at-risk-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.at-risk-warn {
+  color: #dc2626;
+  font-weight: 600;
+}
+
 .logout-btn {
   margin-top: 30px;
 

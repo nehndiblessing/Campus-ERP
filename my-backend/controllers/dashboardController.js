@@ -352,6 +352,93 @@ export const getDepartmentStats = async (req, res) => {
   }
 };
 
+export const getAtRiskStudents = async (req, res) => {
+  try {
+    const attendanceAgg = await Attendance.aggregate([
+      {
+        $group: {
+          _id: "$student",
+          total: { $sum: 1 },
+          present: {
+            $sum: { $cond: [{ $eq: ["$status", "Present"] }, 1, 0] },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          total: 1,
+          present: 1,
+          attendancePercent: {
+            $round: [{ $multiply: [{ $divide: ["$present", "$total"] }, 100] }, 1],
+          },
+        },
+      },
+    ]);
+
+    const marksAgg = await Mark.aggregate([
+      { $group: { _id: "$student", avgMarks: { $avg: "$marks" } } },
+    ]);
+
+    const marksMap = {};
+    marksAgg.forEach((m) => {
+      marksMap[m._id.toString()] = Math.round(m.avgMarks);
+    });
+
+    const atRiskIds = new Set();
+    const atRiskData = {};
+
+    attendanceAgg.forEach((a) => {
+      const sid = a._id.toString();
+      const avgMarks = marksMap[sid];
+      const hasLowAttendance = a.attendancePercent < 75;
+      const hasLowMarks = avgMarks !== undefined && avgMarks < 40;
+      if (hasLowAttendance || hasLowMarks) {
+        atRiskIds.add(a._id);
+        atRiskData[sid] = {
+          attendancePercent: a.attendancePercent,
+          totalAttendance: a.total,
+          presentAttendance: a.present,
+          avgMarks: avgMarks ?? 0,
+        };
+      }
+    });
+
+    marksAgg.forEach((m) => {
+      const sid = m._id.toString();
+      if (!atRiskIds.has(sid) && Math.round(m.avgMarks) < 40) {
+        atRiskIds.add(m._id);
+        atRiskData[sid] = {
+          attendancePercent: 0,
+          totalAttendance: 0,
+          presentAttendance: 0,
+          avgMarks: Math.round(m.avgMarks),
+        };
+      }
+    });
+
+    const students = await Student.find({ _id: { $in: [...atRiskIds] } })
+      .populate("department", "name code")
+      .lean();
+
+    const result = students.map((s) => {
+      const sid = s._id.toString();
+      const d = atRiskData[sid];
+      const lowAttendance = d.attendancePercent < 75;
+      const lowMarks = d.avgMarks < 40;
+      let reason;
+      if (lowAttendance && lowMarks) reason = "Low attendance & low marks";
+      else if (lowAttendance) reason = "Low attendance";
+      else reason = "Low marks";
+      return { ...s, ...d, reason };
+    });
+
+    res.json({ atRiskStudents: result, total: result.length });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getSubjectAverageMarks = async (req, res) => {
   try {
     const subjectAverageAgg = await Mark.aggregate([

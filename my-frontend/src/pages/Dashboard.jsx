@@ -5,11 +5,13 @@ import StatCard from "../components/dashboard/StatCard";
 import AttendanceChart from "../components/dashboard/AttendanceChart";
 import AttendanceTrendChart from "../components/dashboard/AttendanceTrendChart";
 import MarksBarChart from "../components/dashboard/MarksBarChart";
+import AtRiskWidget from "../components/dashboard/AtRiskWidget";
 import api from "../services/api";
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [deptStats, setDeptStats] = useState(null);
+  const [atRisk, setAtRisk] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -17,12 +19,14 @@ const Dashboard = () => {
     const fetchDashboard = async () => {
       setLoading(true);
       try {
-        const [statsRes, deptRes] = await Promise.all([
+        const [statsRes, deptRes, atRiskRes] = await Promise.all([
           api.get("/dashboard/stats"),
           api.get("/dashboard/department-stats"),
+          api.get("/dashboard/at-risk"),
         ]);
         setStats(statsRes.data);
         setDeptStats(deptRes.data);
+        setAtRisk(atRiskRes.data);
         setError("");
       } catch (error) {
         console.error(error);
@@ -89,6 +93,8 @@ const Dashboard = () => {
           <p>No recent students found.</p>
         )}
       </div>
+
+      <AtRiskWidget data={atRisk?.atRiskStudents ?? []} />
 
       <div className="dashboard-section">
         <h2>Department Statistics</h2>
