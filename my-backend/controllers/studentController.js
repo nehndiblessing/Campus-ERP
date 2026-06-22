@@ -40,7 +40,7 @@ export const createStudent = async (req, res) => {
       return res.status(400).json({ message: "All student fields are required" });
     }
 
-    const student = await Student.create(req.body);
+    const student = await (await Student.create(req.body)).populate("department");
     res.status(201).json(student);
   } catch (error) {
     if (error.code === 11000) {
@@ -56,7 +56,7 @@ export const updateStudent = async (req, res) => {
       return res.status(400).json({ message: "Invalid student ID" });
     }
 
-    const student = await Student.findByIdAndUpdate(req.params.id, req.body, {
+    let student = await Student.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
@@ -65,6 +65,7 @@ export const updateStudent = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
+    student = await student.populate("department");
     res.json(student);
   } catch (error) {
     if (error.code === 11000) {
