@@ -7,7 +7,11 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 export const getStudents = async (req, res) => {
   try {
-    const students = await Student.find().populate("department");
+    const { department, semester } = req.query;
+    const filter = {};
+    if (department) filter.department = department;
+    if (semester) filter.semester = parseInt(semester);
+    const students = await Student.find(filter).populate("department");
     res.json(students);
   } catch (error) {
     res.status(500).json({ message: error.message });

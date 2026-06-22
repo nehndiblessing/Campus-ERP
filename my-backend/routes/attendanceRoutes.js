@@ -6,6 +6,7 @@ import adminOnly from "../middleware/adminMiddleware.js";
 import {
   getAttendance,
   createAttendance,
+  bulkCreateAttendance,
   deleteAttendance,
 } from "../controllers/attendanceController.js";
 
@@ -15,6 +16,8 @@ router
   .route("/")
   .get(protect, getAttendance)
   .post(protect, adminOnly, createAttendance);
+
+router.post("/bulk", protect, adminOnly, bulkCreateAttendance);
 
 router
   .route("/:id")

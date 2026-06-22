@@ -2,186 +2,184 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import MainLayout from "../components/layout/MainLayout";
 import Loader from "../components/common/Loader";
-import StudentTable from "../components/students/StudentTable";
 import useAuth from "../context/useAuth";
 import api from "../services/api";
+import "./Attendance.css";
+
+const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 const Attendance = () => {
-  const [attendance, setAttendance] = useState([]);
+  const { user } = useAuth();
+  const [departments, setDepartments] = useState([]);
   const [students, setStudents] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState({
-    student: "",
-    date: "",
-    status: "Present",
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const [filters, setFilters] = useState({
+    department: "",
+    semester: "",
+    date: new Date().toISOString().split("T")[0],
   });
 
-  const fetchAttendance = async () => {
-    try {
-      const { data } = await api.get("/attendance");
-      setAttendance(data);
-      setError("");
-    } catch (error) {
-      console.error(error);
-      setError("Failed to load attendance.");
-      toast.error("Failed to load attendance");
-    }
-  };
-
-  const fetchStudents = async () => {
-    try {
-      const { data } = await api.get("/students");
-      setStudents(data);
-      setError("");
-    } catch (error) {
-      console.error(error);
-      setError("Failed to load students.");
-      toast.error("Failed to load students");
-    }
-  };
+  const [statusMap, setStatusMap] = useState({});
 
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      await Promise.all([fetchAttendance(), fetchStudents()]);
-      setLoading(false);
+    const fetchDepartments = async () => {
+      try {
+        const { data } = await api.get("/departments");
+        setDepartments(data);
+      } catch {
+        toast.error("Failed to load departments");
+      }
     };
-
-    loadData();
+    fetchDepartments();
   }, []);
 
-  const { user } = useAuth();
-
-  const handleAttendanceSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!formData.student) {
-      toast.error("Please select a student.");
-      return;
-    }
-    if (!formData.date) {
-      toast.error("Please select a date.");
+  const loadStudents = async () => {
+    if (!filters.department || !filters.semester || !filters.date) {
+      toast.error("Please select department, semester, and date");
       return;
     }
 
-    setIsSaving(true);
+    setLoading(true);
     try {
-      await api.post("/attendance", formData);
-      await fetchAttendance();
-      setShowModal(false);
-      setFormData({ student: "", date: "", status: "Present" });
-      toast.success("Attendance marked successfully");
+      const [studentsRes, attendanceRes] = await Promise.all([
+        api.get(`/students?department=${filters.department}&semester=${filters.semester}`),
+        api.get(`/attendance?date=${filters.date}`),
+      ]);
+
+      setStudents(studentsRes.data);
+
+      const map = {};
+      studentsRes.data.forEach((s) => {
+        const existing = attendanceRes.data.find(
+          (a) => a.student?._id === s._id
+        );
+        map[s._id] = existing ? existing.status : "Present";
+      });
+      setStatusMap(map);
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Unable to save attendance");
+      toast.error("Failed to load students");
     } finally {
-      setIsSaving(false);
+      setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Delete this attendance record?")) return;
+  const toggleStatus = (studentId) => {
+    setStatusMap((prev) => ({
+      ...prev,
+      [studentId]: prev[studentId] === "Present" ? "Absent" : "Present",
+    }));
+  };
 
+  const handleSaveAll = async () => {
+    const records = Object.entries(statusMap).map(([student, status]) => ({
+      student,
+      status,
+    }));
+
+    setSaving(true);
     try {
-      await api.delete(`/attendance/${id}`);
-      await fetchAttendance();
-      toast.success("Attendance deleted");
+      const { data } = await api.post("/attendance/bulk", {
+        date: filters.date,
+        records,
+      });
+      if (data.errors?.length > 0) {
+        toast.error(`${data.errors.length} record(s) failed`);
+      }
+      toast.success(`Attendance saved for ${data.results.length} student(s)`);
+      loadStudents();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete attendance");
+      toast.error(error.response?.data?.message || "Failed to save attendance");
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
     <MainLayout>
-      <div className="students-header">
+      <div className="page-content">
         <h1>Attendance</h1>
-        {user?.role === "admin" && (
-          <button type="button" onClick={() => setShowModal(true)}>
-            Mark Attendance
+
+        <div className="attendance-filters">
+          <select
+            value={filters.department}
+            onChange={(e) => setFilters({ ...filters, department: e.target.value })}
+          >
+            <option value="">Select Department</option>
+            {departments.map((d) => (
+              <option key={d._id} value={d._id}>{d.name}</option>
+            ))}
+          </select>
+
+          <select
+            value={filters.semester}
+            onChange={(e) => setFilters({ ...filters, semester: e.target.value })}
+          >
+            <option value="">Select Semester</option>
+            {SEMESTERS.map((s) => (
+              <option key={s} value={s}>Semester {s}</option>
+            ))}
+          </select>
+
+          <input
+            type="date"
+            value={filters.date}
+            onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+          />
+
+          <button onClick={loadStudents} disabled={loading}>
+            {loading ? "Loading..." : "Load Students"}
           </button>
-        )}
-      </div>
-
-      {loading ? (
-        <Loader />
-      ) : error ? (
-        <div className="error-message">{error}</div>
-      ) : (
-        <StudentTable attendance={attendance} onDelete={handleDelete} isAdmin={user?.role === "admin"} />
-      )}
-
-      {showModal && (
-        <div className="modal-overlay">
-          <form className="modal" onSubmit={handleAttendanceSubmit}>
-            <h2>Mark Attendance</h2>
-
-            <label>
-              Student
-              <select
-                value={formData.student}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    student: e.target.value,
-                  })
-                }
-                required
-              >
-                <option value="">Select Student</option>
-                {students.map((student) => (
-                  <option key={student._id} value={student._id}>
-                    {student.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              Date
-              <input
-                type="date"
-                required
-                value={formData.date}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    date: e.target.value,
-                  })
-                }
-              />
-            </label>
-
-            <label>
-              Status
-              <select
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    status: e.target.value,
-                  })
-                }
-              >
-                <option value="Present">Present</option>
-                <option value="Absent">Absent</option>
-              </select>
-            </label>
-
-            <div className="modal-actions">
-              <button type="button" onClick={() => setShowModal(false)}>
-                Cancel
-              </button>
-              <button type="submit" disabled={isSaving}>
-                {isSaving ? "Saving..." : "Save"}
-              </button>
-            </div>
-          </form>
         </div>
-      )}
+
+        {loading ? (
+          <Loader />
+        ) : students.length > 0 ? (
+          <>
+            <table className="student-table">
+              <thead>
+                <tr>
+                  <th>Roll No</th>
+                  <th>Name</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map((student) => (
+                  <tr key={student._id}>
+                    <td>{student.rollNo}</td>
+                    <td>{student.name}</td>
+                    <td>
+                      <button
+                        className={`status-btn ${statusMap[student._id] === "Present" ? "present" : "absent"}`}
+                        onClick={() => toggleStatus(student._id)}
+                        disabled={user?.role !== "admin"}
+                      >
+                        {statusMap[student._id] || "Present"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {user?.role === "admin" && (
+              <button
+                className="save-all-btn"
+                onClick={handleSaveAll}
+                disabled={saving}
+              >
+                {saving ? "Saving..." : "Save All"}
+              </button>
+            )}
+          </>
+        ) : filters.department && filters.semester && !loading ? (
+          <p className="no-data">No students found for the selected department and semester.</p>
+        ) : null}
+      </div>
     </MainLayout>
   );
 };
