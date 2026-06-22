@@ -42,13 +42,10 @@ export const createAttendance = async (req, res) => {
     const attendanceDate = new Date(date);
     attendanceDate.setHours(0, 0, 0, 0);
 
-    const existingRecord = await Attendance.findOne({
-      student,
-      date: attendanceDate,
-    });
+    const existing = await Attendance.findOne({ student, date: attendanceDate });
 
-    if (existingRecord) {
-      return res.status(400).json({ message: "Attendance already recorded for this student and date" });
+    if (existing) {
+      return res.status(400).json({ message: "Attendance already submitted" });
     }
 
     const attendance = await Attendance.create({
@@ -85,15 +82,11 @@ export const bulkCreateAttendance = async (req, res) => {
       }
 
       try {
-        const existing = await Attendance.findOne({
-          student,
-          date: attendanceDate,
-        });
+        const existing = await Attendance.findOne({ student, date: attendanceDate });
 
         if (existing) {
-          existing.status = status;
-          await existing.save();
-          results.push(existing);
+          errors.push({ student, message: "Attendance already submitted" });
+          continue;
         } else {
           const created = await Attendance.create({
             student,
