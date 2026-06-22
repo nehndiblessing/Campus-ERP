@@ -167,13 +167,44 @@ const Attendance = () => {
             </table>
 
             {user?.role === "admin" && (
-              <button
-                className="save-all-btn"
-                onClick={handleSaveAll}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save All"}
-              </button>
+              <div className="bulk-actions">
+                <button
+                  className="bulk-btn present-all"
+                  onClick={() =>
+                    setStatusMap(
+                      students.reduce((map, s) => {
+                        map[s._id] = "Present";
+                        return map;
+                      }, {})
+                    )
+                  }
+                >
+                  Mark All Present
+                </button>
+                <button
+                  className="bulk-btn absent-all"
+                  onClick={() =>
+                    setStatusMap(
+                      students.reduce((map, s) => {
+                        map[s._id] = "Absent";
+                        return map;
+                      }, {})
+                    )
+                  }
+                >
+                  Mark All Absent
+                </button>
+                <button className="bulk-btn reset" onClick={loadStudents}>
+                  Reset
+                </button>
+                <button
+                  className="save-all-btn"
+                  onClick={handleSaveAll}
+                  disabled={saving}
+                >
+                  {saving ? "Saving..." : "Save All"}
+                </button>
+              </div>
             )}
           </>
         ) : filters.department && filters.semester && !loading ? (
