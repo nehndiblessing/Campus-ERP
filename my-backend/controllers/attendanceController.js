@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Attendance from "../models/Attendance.js";
 import Student from "../models/Student.js";
+import Activity from "../models/Activity.js";
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
@@ -100,7 +101,50 @@ export const bulkCreateAttendance = async (req, res) => {
       }
     }
 
+    if (results.length > 0) {
+      await Activity.create({
+        action: "attendance_submitted",
+        description: `Attendance submitted for ${results.length} student(s) on ${attendanceDate.toLocaleDateString()}`,
+      });
+    }
+
     res.status(201).json({ results, errors });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateAttendance = async (req, res) => {
+  try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: "Invalid attendance ID" });
+    }
+
+    const { student, date, status } = req.body;
+
+    if (!student || !date || !status) {
+      return res.status(400).json({ message: "Student, date, and status are required" });
+    }
+
+    const attendanceDate = new Date(date);
+    attendanceDate.setHours(0, 0, 0, 0);
+
+    const existing = await Attendance.findOne({ student, date: attendanceDate, _id: { $ne: req.params.id } });
+    if (existing) {
+      return res.status(400).json({ message: "Attendance already exists for this student on this date" });
+    }
+
+    const attendance = await Attendance.findByIdAndUpdate(
+      req.params.id,
+      { student, date: attendanceDate, status },
+      { new: true, runValidators: true }
+    );
+
+    if (!attendance) {
+      return res.status(404).json({ message: "Attendance not found" });
+    }
+
+    res.json(attendance);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

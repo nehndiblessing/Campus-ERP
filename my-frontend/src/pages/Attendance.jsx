@@ -27,9 +27,11 @@ const Attendance = () => {
     const fetchDepartments = async () => {
       try {
         const { data } = await api.get("/departments");
-        setDepartments(data);
-      } catch {
+        setDepartments(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Departments fetch error:", error);
         toast.error("Failed to load departments");
+        setDepartments([]);
       }
     };
     fetchDepartments();
@@ -44,23 +46,36 @@ const Attendance = () => {
     setLoading(true);
     try {
       const [studentsRes, attendanceRes] = await Promise.all([
-        api.get(`/students?department=${filters.department}&semester=${filters.semester}`),
-        api.get(`/attendance?date=${filters.date}`),
+        api.get("/students", {
+          params: {
+            department: filters.department,
+            semester: filters.semester,
+            limit: 1000,
+          },
+        }),
+        api.get("/attendance", { params: { date: filters.date } }),
       ]);
 
-      setStudents(studentsRes.data);
+      const loadedStudents = Array.isArray(studentsRes.data)
+        ? studentsRes.data
+        : (studentsRes.data.students || []);
+      setStudents(loadedStudents);
+
+      const attendanceData = Array.isArray(attendanceRes.data)
+        ? attendanceRes.data
+        : (attendanceRes.data.attendance || []);
 
       const map = {};
-      studentsRes.data.forEach((s) => {
-        const existing = attendanceRes.data.find(
+      loadedStudents.forEach((s) => {
+        const existing = attendanceData.find(
           (a) => a.student?._id === s._id
         );
         map[s._id] = existing ? existing.status : "Present";
       });
       setStatusMap(map);
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to load students");
+      console.error("Load students error:", error);
+      toast.error(error.response?.data?.message || "Failed to load students");
     } finally {
       setLoading(false);
     }

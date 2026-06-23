@@ -112,3 +112,19 @@
   color: #64748b;
   font-size: 1.1rem;
 }
+
+@media (max-width: 700px) {
+  .attendance-filters,
+  .bulk-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .attendance-filters select,
+  .attendance-filters input,
+  .attendance-filters button,
+  .bulk-btn,
+  .save-all-btn {
+    width: 100%;
+  }
+}

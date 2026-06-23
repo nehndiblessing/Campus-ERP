@@ -268,6 +268,7 @@ export const getDepartmentStats = async (req, res) => {
     const departments = await Department.find().lean();
 
     const studentCounts = await Student.aggregate([
+      { $match: { department: { $type: "objectId" } } },
       { $group: { _id: "$department", count: { $sum: 1 } } },
     ]);
 
@@ -282,6 +283,7 @@ export const getDepartmentStats = async (req, res) => {
         },
       },
       { $unwind: "$studentInfo" },
+      { $match: { "studentInfo.department": { $type: "objectId" } } },
       {
         $group: {
           _id: "$studentInfo.department",
@@ -305,6 +307,7 @@ export const getDepartmentStats = async (req, res) => {
         },
       },
       { $unwind: "$studentInfo" },
+      { $match: { "studentInfo.department": { $type: "objectId" } } },
       {
         $group: {
           _id: "$studentInfo.department",

@@ -1,7 +1,9 @@
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-const rawBaseURL = import.meta.env.VITE_API_URL?.trim() || "https://campus-erp.onrender.com/api";
+const rawBaseURL = import.meta.env.DEV
+  ? "http://localhost:8006/api"
+  : (import.meta.env.VITE_API_URL?.trim() || "https://campus-erp.onrender.com/api");
 const normalizedBaseURL = rawBaseURL.replace(/\/+$/, "");
 const baseURL = normalizedBaseURL.endsWith("/api")
   ? normalizedBaseURL

@@ -10,6 +10,8 @@ import studentRoutes from "./routes/studentRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import markRoutes from "./routes/markRoutes.js";
 import departmentRoutes from "./routes/departmentRoutes.js";
+import activityRoutes from "./routes/activityRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 import User from "./models/User.js";
 
@@ -50,6 +52,8 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/marks", markRoutes);
 app.use("/api/departments", departmentRoutes);
+app.use("/api/activities", activityRoutes);
+app.use("/api/reports", reportRoutes);
 app.get("/", (req, res) => {
   res.send("Campus ERP API Running");
 });

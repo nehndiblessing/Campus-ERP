@@ -2,17 +2,38 @@ import mongoose from "mongoose";
 import Student from "../models/Student.js";
 import Attendance from "../models/Attendance.js";
 import Mark from "../models/Marks.js";
+import Activity from "../models/Activity.js";
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 export const getStudents = async (req, res) => {
   try {
-    const { department, semester } = req.query;
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Number(req.query.limit ?? 0);
+    const { department, semester, searchName, searchRollNo } = req.query;
     const filter = {};
     if (department) filter.department = department;
-    if (semester) filter.semester = parseInt(semester);
-    const students = await Student.find(filter).populate("department");
-    res.json(students);
+    if (semester) filter.semester = parseInt(semester, 10);
+    if (searchName) filter.name = { $regex: searchName, $options: "i" };
+    if (searchRollNo) filter.rollNo = { $regex: searchRollNo, $options: "i" };
+
+    const total = await Student.countDocuments(filter);
+    const query = Student.find(filter).populate("department");
+
+    if (limit > 0) {
+      query.skip((page - 1) * limit).limit(limit);
+    }
+
+    const students = await query;
+    const totalPages = limit > 0 ? Math.max(1, Math.ceil(total / limit)) : 1;
+
+    res.json({
+      students,
+      page,
+      limit,
+      totalPages,
+      total,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -45,6 +66,12 @@ export const createStudent = async (req, res) => {
     }
 
     const student = await (await Student.create(req.body)).populate("department");
+
+    await Activity.create({
+      action: "student_created",
+      description: `New student "${student.name}" (${student.rollNo}) added`,
+    });
+
     res.status(201).json(student);
   } catch (error) {
     if (error.code === 11000) {

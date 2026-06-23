@@ -12,7 +12,7 @@ import {
 const MarksBarChart = ({ data = [] }) => {
   return (
     <div style={{ width: "100%", height: 320 }}>
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%" height={320}>
         <BarChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="subject" />

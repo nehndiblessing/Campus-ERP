@@ -7,6 +7,7 @@ import {
   getAttendance,
   createAttendance,
   bulkCreateAttendance,
+  updateAttendance,
   deleteAttendance,
 } from "../controllers/attendanceController.js";
 
@@ -21,6 +22,7 @@ router.post("/bulk", protect, adminOnly, bulkCreateAttendance);
 
 router
   .route("/:id")
+  .put(protect, adminOnly, updateAttendance)
   .delete(protect, adminOnly, deleteAttendance);
 
 export default router;

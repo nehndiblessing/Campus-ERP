@@ -12,7 +12,7 @@ const getStoredUser = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(getStoredUser);
+  const [user, setUser] = useState(getStoredUser());
   const [loading, setLoading] = useState(true);
 
   const login = (userData) => {
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const { data } = await api.get("/auth/me");
         login({ ...data, token: storedUser.token });
-      } catch (error) {
+      } catch {
         logout();
       } finally {
         setLoading(false);
